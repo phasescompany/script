@@ -20,29 +20,42 @@ async function startServer() {
   });
 
   app.get('/api/auth/google/url', (req, res) => {
-    const redirectUri = req.query.redirectUri as string;
-    if (!redirectUri) {
-      return res.status(400).json({ error: 'redirectUri is required' });
+    try {
+      const redirectUri = req.query.redirectUri as string;
+      if (!redirectUri) {
+        return res.status(400).json({ error: 'redirectUri is required' });
+      }
+
+      const clientId = process.env.GOOGLE_CLIENT_ID;
+      const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+
+      if (!clientId || !clientSecret) {
+         console.warn("Google Client ID or Secret is not configured in environment variables");
+         return res.status(500).json({ error: 'Google Client ID or Secret is not configured.' });
+      }
+
+      const oauth2Client = new google.auth.OAuth2(
+        clientId,
+        clientSecret,
+        redirectUri
+      );
+
+      const scopes = [
+        'https://www.googleapis.com/auth/drive.readonly'
+      ];
+
+      const url = oauth2Client.generateAuthUrl({
+        access_type: 'offline',
+        scope: scopes,
+        prompt: 'consent',
+        state: redirectUri
+      });
+
+      res.json({ url });
+    } catch (err: any) {
+      console.error('Error generating Google OAuth URL:', err);
+      res.status(500).json({ error: err.message || 'Error generating Google OAuth URL' });
     }
-
-    const oauth2Client = new google.auth.OAuth2(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      redirectUri
-    );
-
-    const scopes = [
-      'https://www.googleapis.com/auth/drive.readonly'
-    ];
-
-    const url = oauth2Client.generateAuthUrl({
-      access_type: 'offline',
-      scope: scopes,
-      prompt: 'consent',
-      state: redirectUri
-    });
-
-    res.json({ url });
   });
 
   app.get(['/api/auth/google/callback', '/api/auth/google/callback/'], async (req, res) => {
@@ -123,6 +136,12 @@ async function startServer() {
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
+
+  // Global Error Handler
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error('Unhandled Server Error:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  });
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on http://localhost:${PORT}`);
