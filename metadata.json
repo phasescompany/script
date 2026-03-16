@@ -1,0 +1,5 @@
+{
+  "name": "Phases Script",
+  "description": "Web app para filmmakers de aftermovies de eventos corporativos gerenciarem roteiros, cast e captação com IA.",
+  "requestFramePermissions": ["camera"]
+}

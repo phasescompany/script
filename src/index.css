@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0F0804;
+  --color-surface: #1C0F06;
+  --color-card: #2A1509;
+  --color-border: #441B06;
+  --color-accent-main: #FFA300;
+  --color-accent-hi: #FDD34C;
+  --color-accent-lo: #DB7500;
+  --color-text-main: #FFFBEC;
+  --color-text-dim: #FCE68F;
+  --color-text-faint: #B55204;
+  --color-danger: #FF3B3B;
+  --color-success: #4ADE80;
+
+  --font-serif: "DM Serif Display", serif;
+  --font-mono: "IBM Plex Mono", monospace;
+  --font-sans: "Inter", sans-serif;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-main);
+  font-family: var(--font-sans);
+}
+
+/* Custom scrollbar for horizontal lists */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
